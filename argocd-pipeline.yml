@@ -3,12 +3,12 @@ trigger: none
 pr: none
 
 variables:
-  AWS_SERVICE_CONNECTION: 'bahi-aws-v2'
-  AWS_REGION: 'us-east-1'
+  AWS_SERVICE_CONNECTION: 'Ashraf_aws'
+  AWS_REGION: 'eu-west-1'
   CLUSTER_NAME: 'eks-platform-nonprod-v2-cluster'
 
 pool:
-  name: queue-bebo_mohammed
+  vmImage: ubuntu-latest
 
 jobs:
 - job: ArgoSync
@@ -79,13 +79,13 @@ jobs:
            exit 0
         fi
 
-        kubectl delete secret regcred -n bahi --ignore-not-found=true
+        kubectl delete secret regcred -n ashraf --ignore-not-found=true
         kubectl create secret docker-registry regcred \
-          --namespace bahi \
+          --namespace ashraf \
           --docker-server=https://index.docker.io/v1/ \
           --docker-username="$(DOCKER_USERNAME)" \
           --docker-password="$(DOCKER_PASSWORD)" \
-          --docker-email=bebomohammed904@gmail.com
+          --docker-email=masrhef@gmail.com
         
         if ! command -v helm &> /dev/null; then
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
@@ -95,12 +95,12 @@ jobs:
         printf "ingress:\n  annotations:\n    nginx.ingress.kubernetes.io/auth-signin: \"$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri\"\n" > dynamic-values.yaml
 
         helm upgrade --install motivational-app ./motivational-app \
-          --namespace bahi --create-namespace \
+          --namespace ashraf --create-namespace \
           --set image.tag="latest" \
           -f dynamic-values.yaml \
           --wait --timeout 10m \
           --debug
 
-        kubectl rollout restart deployment -n bahi -l app.kubernetes.io/instance=motivational-app
+        kubectl rollout restart deployment -n ashraf -l app.kubernetes.io/instance=motivational-app
     env:
       DOCKER_PASSWORD: $(DOCKER_PASSWORD)

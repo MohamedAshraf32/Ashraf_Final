@@ -4,21 +4,20 @@ trigger: none
 pr: none
 
 variables:
-  AWS_SERVICE_CONNECTION: 'bahi-aws-v2'
-  AWS_REGION: 'us-east-1'
-  IMAGE_REPOSITORY: '20107946/realfinal'
+  AWS_SERVICE_CONNECTION: 'Ashraf_aws'
+  AWS_REGION: 'eu-west-1'
+  IMAGE_REPOSITORY: 'yabani1/ashroof'
   # OPTIMIZATION: Set this variable in Azure DevOps Library to avoid running Terraform to find it.
-  # CLUSTER_NAME: 'realfinal-eks' 
-# pool:
-#  vmImage: ubuntu-latest
+   
 pool:
-  name: queue-bebo_mohammed
+ vmImage: ubuntu-latest
+
 
 jobs:
 - job: Release
   displayName: 'Build and Release Docker Image'
-  pool:
-    name: queue-bebo_mohammed
+pool:
+  vmImage: ubuntu-latest
   steps:
   - checkout: self
 
@@ -27,7 +26,7 @@ jobs:
     displayName: Build and Push Docker Image
     inputs:
       containerRegistry: 'docker'
-      repository: 20107946/realfinal
+      repository: yabani1/ashroof
       command: 'buildAndPush'
       Dockerfile: '**/Dockerfile'
       tags: |

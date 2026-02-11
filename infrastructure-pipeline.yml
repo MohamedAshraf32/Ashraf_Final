@@ -2,10 +2,8 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-Infrastructure
 trigger: none
 pr: none
 
-# pool:
-#  vmImage: ubuntu-latest
 pool:
-  name: queue-bebo_mohammed
+  vmImage: ubuntu-latest
 
 parameters:
   - name: env
@@ -22,8 +20,8 @@ parameters:
 variables:
   TF_DIR: '.' 
   TF_VAR_FILE: '${{ parameters.env }}.tfvars'
-  AWS_SERVICE_CONNECTION: 'bahi-aws-v2'
-  AWS_REGION: 'us-east-1'
+  AWS_SERVICE_CONNECTION: 'Ashraf_aws'
+  AWS_REGION: 'eu-west-1'
 
 
 

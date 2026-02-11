@@ -16,7 +16,7 @@ terraform {
   }
  }
 provider "aws" {
-  region = "us-east-1"   # Change this to your preferred region (e.g., us-east-1)
+  region = "eu-west-1"  
 }
 
 data "aws_eks_cluster_auth" "main" {

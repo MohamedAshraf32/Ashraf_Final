@@ -11,14 +11,13 @@ parameters:
 variables:
   TF_DIR: '.' 
   TF_VAR_FILE: '${{ parameters.env }}.tfvars'
-  AWS_SERVICE_CONNECTION: 'bahi-aws-v2'
-  AWS_REGION: 'us-east-1'
+  AWS_SERVICE_CONNECTION: 'Ashraf_aws'
+  AWS_REGION: 'eu-west-1'
 
-# pool:
-#   vmImage: ubuntu-latest
- 
 pool:
- name: queue-bebo_mohammed
+  vmImage: ubuntu-latest
+ 
+
 
 jobs:
 - job: Addons
@@ -381,11 +380,11 @@ jobs:
         EOF
         
         # Delete existing Vault StatefulSet if needed (to allow storage changes)
-        # kubectl delete statefulset vault -n bahi --ignore-not-found=true
+        # kubectl delete statefulset vault -n ashraf --ignore-not-found=true
 
         helm upgrade --install vault vault \
           --repo https://helm.releases.hashicorp.com \
-          --namespace bahi --create-namespace \
+          --namespace ashraf --create-namespace \
           --wait --timeout 5m \
           -f vault-ingress-values.yaml
 
@@ -435,20 +434,20 @@ jobs:
         EOF
         
         # Cleanup potential stuck jobs from previous failed installs
-        # kubectl delete job -n bahi argocd-redis-secret-init --ignore-not-found=true
+        # kubectl delete job -n ashraf argocd-redis-secret-init --ignore-not-found=true
         
         n=0
         until [ "$n" -ge 3 ]
         do
            helm upgrade --install argocd argo-cd \
              --repo https://argoproj.github.io/argo-helm \
-             --namespace bahi --create-namespace \
+             --namespace ashraf --create-namespace \
              --wait --timeout 10m \
              -f argocd-ingress-values.yaml && break
            n=$((n+1))
            echo "Deploy failed (attempt $n/3). Retrying in 10s..."
            # Aggressive cleanup: Uninstall to clear bad state/conflicts
-           helm uninstall argocd -n bahi || true
+           helm uninstall argocd -n ashraf || true
            # Wait a bit for resources to terminate
            sleep 20
         done
@@ -464,7 +463,7 @@ jobs:
         kind: Ingress
         metadata:
           name: argocd-server
-          namespace: bahi
+          namespace: ashraf
           annotations:
             nginx.ingress.kubernetes.io/backend-protocol: HTTP
         spec:
@@ -483,13 +482,13 @@ jobs:
         
         echo "Waiting for ArgoCD Redis Secret Init Job..."
         # Wait up to 5 minutes for the job to complete
-        # if ! kubectl wait --for=condition=complete job/argocd-redis-secret-init -n bahi --timeout=300s; then
+        # if ! kubectl wait --for=condition=complete job/argocd-redis-secret-init -n ashraf --timeout=300s; then
         #     echo "ArgoCD Redis Secret Init Job timed out or failed. Debugging..."
-        #     kubectl get pods -n bahi
-        #     kubectl describe job -n bahi argocd-redis-secret-init || true
-        #     kubectl logs -n bahi -l job-name=argocd-redis-secret-init --tail=100 || true
+        #     kubectl get pods -n ashraf
+        #     kubectl describe job -n ashraf argocd-redis-secret-init || true
+        #     kubectl logs -n ashraf -l job-name=argocd-redis-secret-init --tail=100 || true
         #     # Check for events in the namespace to see pulling errors
-        #     kubectl get events -n bahi --sort-by='.lastTimestamp' | tail -n 20
+        #     kubectl get events -n ashraf --sort-by='.lastTimestamp' | tail -n 20
         #     exit 1
         # fi
         
@@ -539,12 +538,12 @@ jobs:
 
         if ! helm upgrade --install sonarqube sonarqube \
           --repo https://SonarSource.github.io/helm-chart-sonarqube \
-          --namespace bahi --create-namespace \
+          --namespace ashraf --create-namespace \
           --wait --timeout 10m \
           -f sonarqube-values.yaml; then
             echo "SonarQube installation failed. Debugging..."
-            kubectl get pods -n bahi -l app=sonarqube
-            kubectl describe pods -n bahi -l app=sonarqube
-            kubectl logs -n bahi -l app=sonarqube --tail=100
+            kubectl get pods -n ashraf -l app=sonarqube
+            kubectl describe pods -n ashraf -l app=sonarqube
+            kubectl logs -n ashraf -l app=sonarqube --tail=100
             exit 1
         fi
