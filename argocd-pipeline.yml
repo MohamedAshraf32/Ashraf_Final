@@ -94,6 +94,7 @@ jobs:
         echo "Nuclear Cleanup: Removing existing release if present..."
         helm uninstall motivational-app -n ashraf || true
         kubectl delete jobs -n ashraf -l app.kubernetes.io/instance=motivational-app --ignore-not-found=true
+        kubectl delete deployment motivational-app -n ashraf --ignore-not-found=true
 
         # 2. Advanced Connectivity Check
         EKS_URL=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}')
