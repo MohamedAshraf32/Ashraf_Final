@@ -10,8 +10,8 @@ variables:
 jobs:
 - job: Release
   displayName: 'Build and Release Docker Image'
-  pool:
-    name: queue-bebo_mohammed
+pool:
+  name: queue-bebo_mohammed
   steps:
     - checkout: self
 
