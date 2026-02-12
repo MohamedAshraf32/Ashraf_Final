@@ -123,8 +123,11 @@ jobs:
           --namespace ashraf --create-namespace \
           --set image.tag="latest" \
           -f dynamic-values.yaml \
+          --wait --timeout 5m \
           --debug
 
-        kubectl rollout restart deployment -n ashraf -l app.kubernetes.io/instance=motivational-app
+        echo "Deployment Status:"
+        kubectl get pods -n ashraf -l app.kubernetes.io/instance=motivational-app
+        kubectl get endpoints motivational-app -n ashraf
     env:
       DOCKER_PASSWORD: $(DOCKER_PASSWORD)
