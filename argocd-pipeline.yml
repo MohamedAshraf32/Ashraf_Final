@@ -93,9 +93,16 @@ jobs:
         helm version
         helm list -n ashraf || true
 
-        # Create values file using printf to avoid YAML/Shell parsing issues
-        printf "ingress:\n  annotations:\n    nginx.ingress.kubernetes.io/auth-signin: \"$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri\"\n" > dynamic-values.yaml
+        # Create values file using heredoc for safety
+        cat <<EOF > dynamic-values.yaml
+ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/auth-signin: "$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri"
+EOF
         cat dynamic-values.yaml
+
+        helm lint ./motivational-app -f dynamic-values.yaml
+        helm template motivational-app ./motivational-app -f dynamic-values.yaml --debug
 
         helm upgrade --install motivational-app ./motivational-app \
           --namespace ashraf --create-namespace \
