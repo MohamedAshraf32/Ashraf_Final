@@ -118,16 +118,25 @@ jobs:
         echo "Generated values:"
         cat dynamic-values.yaml
 
-        # 4. Final Deploy Attempt
-        helm upgrade --install motivational-app ./motivational-app \
+        # 4. Final Deploy Attempt with Failure Trap
+        echo "Starting Helm upgrade..."
+        if ! helm upgrade --install motivational-app ./motivational-app \
           --namespace ashraf --create-namespace \
           --set image.tag="latest" \
           -f dynamic-values.yaml \
           --wait --timeout 5m \
-          --debug
+          --debug; then
+            echo "##[error] Helm upgrade failed or timed out. Collecting diagnostics..."
+            echo "Deployment Pods:"
+            kubectl get pods -n ashraf -l app.kubernetes.io/instance=motivational-app
+            echo "Pod Descriptions (Events):"
+            kubectl describe pods -n ashraf -l app.kubernetes.io/instance=motivational-app
+            echo "Recent Logs for Containers:"
+            kubectl logs -n ashraf -l app.kubernetes.io/instance=motivational-app --all-containers=true --tail=50
+            exit 1
+        fi
 
-        echo "Deployment Status:"
+        echo "Deployment Succeeded. Current Status:"
         kubectl get pods -n ashraf -l app.kubernetes.io/instance=motivational-app
-        kubectl get endpoints motivational-app -n ashraf
     env:
       DOCKER_PASSWORD: $(DOCKER_PASSWORD)
