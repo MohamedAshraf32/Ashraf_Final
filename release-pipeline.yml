@@ -5,7 +5,7 @@ pr: none
 variables:
   AWS_SERVICE_CONNECTION: 'Ashraf_aws'
   AWS_REGION: 'eu-west-1'
-  IMAGE_REPOSITORY: 'yabani1/ashroof'
+  IMAGE_REPOSITORY: 'yabani1/ashroo'
 
 jobs:
 - job: Release
