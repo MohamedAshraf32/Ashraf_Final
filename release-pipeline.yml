@@ -18,7 +18,7 @@ jobs:
 - job: Release
   displayName: 'Build and Release Docker Image'
 pool:
-  vmImage: ubuntu-latest
+ name: queue-bebo_mohammed
   steps:
   - checkout: self
 
