@@ -61,7 +61,8 @@ jobs:
         AUTH_STRING=$(python3 -c "import json; data = json.load(open('$CONFIG_FILE')); print(list(data['auths'].values())[0]['auth'])")
         DECODED_AUTH=$(echo "$AUTH_STRING" | base64 -d)
         DOCKER_USERNAME=$(echo "$DECODED_AUTH" | cut -d: -f1)
-        echo "Detected Docker Username: $DOCKER_USERNAME"
+        echo "Detected Docker Username (First 3 chars): ${DOCKER_USERNAME:0:3}"
+        echo "Detected Docker Username (Last 3 chars): ${DOCKER_USERNAME: -3}"
         DOCKER_PASSWORD=$(echo "$DECODED_AUTH" | cut -d: -f2-)
         echo "##vso[task.setvariable variable=DOCKER_USERNAME]$DOCKER_USERNAME"
         echo "##vso[task.setvariable variable=DOCKER_PASSWORD;isSecret=true]$DOCKER_PASSWORD"
