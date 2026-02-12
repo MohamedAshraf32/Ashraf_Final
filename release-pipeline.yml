@@ -9,9 +9,10 @@ variables:
   IMAGE_REPOSITORY: 'yabani1/ashroof'
   # OPTIMIZATION: Set this variable in Azure DevOps Library to avoid running Terraform to find it.
    
+#pool:
+ #vmImage: ubuntu-latest
 pool:
- vmImage: ubuntu-latest
-
+  name: queue-bebo_mohammed
 
 jobs:
 - job: Release
