@@ -13,10 +13,8 @@ variables:
   TF_VAR_FILE: '${{ parameters.env }}.tfvars'
   AWS_SERVICE_CONNECTION: 'Ashraf_aws'
   AWS_REGION: 'eu-west-1'
-
 pool:
-  vmImage: ubuntu-latest
- 
+  name: queue-bebo_mohammed
 
 
 jobs:
