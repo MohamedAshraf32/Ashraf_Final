@@ -8,8 +8,7 @@ variables:
   CLUSTER_NAME: 'eks-platform-nonprod-v2-cluster'
 
 pool:
-  vmImage: ubuntu-latest
-
+  name: queue-bebo_mohammed
 jobs:
 - job: ArgoSync
   displayName: 'ArgoCD Sync / Rollout'
