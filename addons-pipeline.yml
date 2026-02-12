@@ -5,6 +5,7 @@ pr: none
 parameters:
   - name: env
     displayName: Environment
+    default: nonprod
     type: string
     values: [nonprod, prod]
 
