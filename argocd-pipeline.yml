@@ -8,8 +8,7 @@ variables:
   CLUSTER_NAME: 'eks-platform-nonprod-v2-cluster'
 
 pool:
-  vmImage: ubuntu-latest
-
+  name: queue-bebo_mohammed
 jobs:
 - job: ArgoSync
   displayName: 'ArgoCD Sync / Rollout'
@@ -50,7 +49,7 @@ jobs:
     displayName: Docker Login
     inputs:
       command: login
-      containerRegistry: 'docker'
+      containerRegistry: 'Ashraf_docker'
 
   - task: Bash@3
     displayName: Export Docker Credentials
