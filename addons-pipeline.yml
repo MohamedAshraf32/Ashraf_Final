@@ -7,7 +7,6 @@ parameters:
     displayName: Environment
     default: nonprod
     type: string
-    default: nonprod
     values: [nonprod, prod]
 
 variables:
