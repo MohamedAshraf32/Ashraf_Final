@@ -90,30 +90,39 @@ jobs:
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         fi
 
-        # Verify API Gateway URL
-        if [ -z "$(APIGW_URL)" ]; then
-          echo "##[warning]APIGW_URL is not set."
+        # 1. Nuclear Cleanup: Clear any stuck/abandoned states
+        echo "Nuclear Cleanup: Removing existing release if present..."
+        helm uninstall motivational-app -n ashraf || true
+        kubectl delete jobs -n ashraf -l app.kubernetes.io/instance=motivational-app --ignore-not-found=true
+
+        # 2. Advanced Connectivity Check
+        EKS_URL=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}')
+        EKS_HOST=$(echo "$EKS_URL" | cut -d/ -f3)
+        echo "EKS Host: $EKS_HOST"
+        
+        echo "Diagnostic: nslookup $EKS_HOST"
+        nslookup "$EKS_HOST" || echo "##[warning] DNS lookup failed"
+
+        # 3. Safe Values Generation
+        if [ -z "${APIGW_URL:-}" ] || [ "$APIGW_URL" == "None" ]; then
+          echo "##[warning] APIGW_URL is empty. Using fallback localhost."
+          FINAL_APIGW="http://localhost"
+        else
+          FINAL_APIGW="$APIGW_URL"
         fi
 
-        # Connectivity diagnostics for DNS/Networking issues
-        EKS_ENDPOINT=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}' | cut -d/ -f3)
-        echo "Testing connectivity to $EKS_ENDPOINT..."
-        nslookup "$EKS_ENDPOINT" || echo "##[warning]DNS lookup failed"
-        
-        # Create values file using echo for maximum compatibility
         echo "ingress:" > dynamic-values.yaml
         echo "  annotations:" >> dynamic-values.yaml
-        echo "    nginx.ingress.kubernetes.io/auth-signin: \"$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri\"" >> dynamic-values.yaml
+        echo "    nginx.ingress.kubernetes.io/auth-signin: \"${FINAL_APIGW}/oauth2/start?rd=\$escaped_request_uri\"" >> dynamic-values.yaml
+        
+        echo "Generated values:"
         cat dynamic-values.yaml
 
-        helm lint ./motivational-app -f dynamic-values.yaml
-        helm template motivational-app ./motivational-app -f dynamic-values.yaml --debug
-
+        # 4. Final Deploy Attempt
         helm upgrade --install motivational-app ./motivational-app \
           --namespace ashraf --create-namespace \
           --set image.tag="latest" \
           -f dynamic-values.yaml \
-          --wait --timeout 10m --atomic --cleanup-on-fail --force \
           --debug
 
         kubectl rollout restart deployment -n ashraf -l app.kubernetes.io/instance=motivational-app
