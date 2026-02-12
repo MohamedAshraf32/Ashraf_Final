@@ -90,15 +90,20 @@ jobs:
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         fi
 
-        helm version
-        helm list -n ashraf || true
+        # Verify API Gateway URL
+        if [ -z "$(APIGW_URL)" ]; then
+          echo "##[warning]APIGW_URL is not set."
+        fi
 
-        # Create values file using heredoc for safety
-        cat <<EOF > dynamic-values.yaml
-        ingress:
-          annotations:
-            nginx.ingress.kubernetes.io/auth-signin: "$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri"
-        EOF
+        # Connectivity diagnostics for DNS/Networking issues
+        EKS_ENDPOINT=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}' | cut -d/ -f3)
+        echo "Testing connectivity to $EKS_ENDPOINT..."
+        nslookup "$EKS_ENDPOINT" || echo "##[warning]DNS lookup failed"
+        
+        # Create values file using echo for maximum compatibility
+        echo "ingress:" > dynamic-values.yaml
+        echo "  annotations:" >> dynamic-values.yaml
+        echo "    nginx.ingress.kubernetes.io/auth-signin: \"$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri\"" >> dynamic-values.yaml
         cat dynamic-values.yaml
 
         helm lint ./motivational-app -f dynamic-values.yaml
