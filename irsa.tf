@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "irsa_assume" {
 resource "aws_iam_role" "irsa" {
   for_each = var.irsa_roles
 
-  name               = "${aws_eks_cluster.main.name}-${each.key}-irsa"
+  name_prefix        = "${aws_eks_cluster.main.name}-${each.key}-irsa-"
   assume_role_policy = data.aws_iam_policy_document.irsa_assume[each.key].json
   tags               = var.tags
 }

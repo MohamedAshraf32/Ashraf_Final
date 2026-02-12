@@ -8,7 +8,7 @@ locals {
 }
 
 resource "aws_iam_role" "eks_cluster" {
-  name = "${var.project_name}-cluster-role"
+  name_prefix = "${var.project_name}-cluster-"
   assume_role_policy = jsonencode({
   Version = "2012-10-17"
   Statement = [{
@@ -55,7 +55,7 @@ resource "aws_eks_cluster" "main" {
 
 # Service Role for Worker Nodes
 resource "aws_iam_role" "eks_nodes" {
-  name = "${var.project_name}-node-role"
+  name_prefix = "${var.project_name}-node-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -167,7 +167,7 @@ data "aws_iam_policy_document" "ebs_csi_irsa_assume" {
 }
 
 resource "aws_iam_role" "ebs_csi_driver" {
-  name               = "${var.project_name}-ebs-csi-role"
+  name_prefix        = "${var.project_name}-ebs-csi-"
   assume_role_policy = data.aws_iam_policy_document.ebs_csi_irsa_assume.json
   tags               = var.tags
 }
