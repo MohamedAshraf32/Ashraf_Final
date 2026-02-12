@@ -90,8 +90,12 @@ jobs:
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         fi
 
+        helm version
+        helm list -n ashraf || true
+
         # Create values file using printf to avoid YAML/Shell parsing issues
         printf "ingress:\n  annotations:\n    nginx.ingress.kubernetes.io/auth-signin: \"$(APIGW_URL)/oauth2/start?rd=\$escaped_request_uri\"\n" > dynamic-values.yaml
+        cat dynamic-values.yaml
 
         helm upgrade --install motivational-app ./motivational-app \
           --namespace ashraf --create-namespace \
