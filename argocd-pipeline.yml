@@ -49,7 +49,7 @@ jobs:
     displayName: Docker Login
     inputs:
       command: login
-      containerRegistry: 'docker'
+      containerRegistry: 'Ashraf_docker'
 
   - task: Bash@3
     displayName: Export Docker Credentials
