@@ -12,7 +12,7 @@ variables:
 #pool:
  #vmImage: ubuntu-latest
 pool:
-  name: queue-bebo_mohammed
+ name: queue-bebo_mohammed
 
 jobs:
 - job: Release
